@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/backube/pvc-transfer/endpoint"
-	"github.com/backube/pvc-transfer/internal/utils"
 	"github.com/go-logr/logr"
+	"github.com/migtools/pvc-transfer/endpoint"
+	"github.com/migtools/pvc-transfer/internal/utils"
 	routev1 "github.com/openshift/api/route/v1"
 	corev1 "k8s.io/api/core/v1"
 	metaapi "k8s.io/apimachinery/pkg/api/meta"
@@ -36,9 +36,10 @@ func AddToScheme(scheme *runtime.Scheme) error {
 // APIsToWatch give a list of APIs to watch if using this package
 // to deploy the endpoint. The error can be checked as follows to determine if
 // the package is not usable with the given kube apiserver
-//  	noResourceError := &metaapi.NoResourceMatchError{}
-//		if errors.As(err, &noResourceError) {
-// 		}
+//
+//	 	noResourceError := &metaapi.NoResourceMatchError{}
+//			if errors.As(err, &noResourceError) {
+//			}
 func APIsToWatch(c client.Client) ([]client.Object, error) {
 	_, err := c.RESTMapper().ResourceFor(schema.GroupVersionResource{
 		Group:    "route.openshift.io",
@@ -77,11 +78,12 @@ type route struct {
 // In order to identify if the route API exists check for the following error after calling
 // New()
 // noResourceError := &metaapi.NoResourceMatchError{}
-//	switch {
-//	case errors.As(err, &noResourceError):
-//		// log route is not available, reconcilers should not requeue at this point
-//		log.Info("route.openshift.io is unavailable, route endpoint will be disabled")
-//  }
+//
+//		switch {
+//		case errors.As(err, &noResourceError):
+//			// log route is not available, reconcilers should not requeue at this point
+//			log.Info("route.openshift.io is unavailable, route endpoint will be disabled")
+//	 }
 //
 // In order to generate the right RBAC, add the following lines to the Reconcile function annotations.
 // +kubebuilder:rbac:groups=route.openshift.io,resources=routes,verbs=get;list;watch;create;update;patch;delete

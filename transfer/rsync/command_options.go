@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/backube/pvc-transfer/transfer"
+	"github.com/migtools/pvc-transfer/transfer"
 	errorsutil "k8s.io/apimachinery/pkg/util/errors"
 )
 

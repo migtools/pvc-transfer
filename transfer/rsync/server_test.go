@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/backube/pvc-transfer/transfer"
-	"github.com/backube/pvc-transfer/transport"
-	"github.com/backube/pvc-transfer/transport/stunnel"
 	logrtesting "github.com/go-logr/logr/testing"
+	"github.com/migtools/pvc-transfer/transfer"
+	"github.com/migtools/pvc-transfer/transport"
+	"github.com/migtools/pvc-transfer/transport/stunnel"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"

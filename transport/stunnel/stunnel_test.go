@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/backube/pvc-transfer/transport"
-	"github.com/backube/pvc-transfer/transport/tls/certs"
 	logrtesting "github.com/go-logr/logr/testing"
+	"github.com/migtools/pvc-transfer/transport"
+	"github.com/migtools/pvc-transfer/transport/tls/certs"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
