@@ -1,0 +1,50 @@
+name: Go build and unit tests
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build and unit test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - name: Verify go.mod/go.sum are tidy
+        env:
+          GOPROXY: "https://proxy.golang.org"
+        run: |
+          go mod tidy
+          git diff --quiet HEAD
+
+      - name: Build all packages
+        env:
+          GOPROXY: "https://proxy.golang.org"
+        run: go build ./...
+
+      - name: Unit tests with coverage
+        env:
+          GOPROXY: "https://proxy.golang.org"
+        run: |
+          go test -v -coverprofile=coverage.out -covermode=atomic ./...
+          echo "## Coverage Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          go tool cover -func=coverage.out | tail -1 >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save PR number
+        if: github.event_name == 'pull_request'
+        run: echo "${{ github.event.pull_request.number }}" > pr-number.txt
+
+      - name: Upload coverage artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage.out
+            pr-number.txt
