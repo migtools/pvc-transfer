@@ -201,6 +201,63 @@ func Test_ingress_IsHealthy(t *testing.T) {
 	}
 }
 
+func Test_ingress_Hostname(t *testing.T) {
+	t.Run("short names remain unchanged", func(t *testing.T) {
+		i := &ingress{
+			namespacedName: types.NamespacedName{
+				Name:      "data-pvc",
+				Namespace: "test-ns",
+			},
+			subdomain: "test.net",
+		}
+
+		got := i.Hostname()
+		want := "data-pvc-test-ns.test.net"
+		if got != want {
+			t.Errorf("ingress.Hostname() = %q, want %q", got, want)
+		}
+	})
+
+	t.Run("long names are hash truncated", func(t *testing.T) {
+		i := &ingress{
+			namespacedName: types.NamespacedName{
+				Name:      "data-pvc",
+				Namespace: "this-is-a-namespace-name-that-is-exactly-sixty-three-chars-long",
+			},
+			subdomain: "test.net",
+		}
+
+		got := i.Hostname()
+		want := "data-pvc-this-is-a-namespace-name-that-is-exactly-six-c668f79b.test.net"
+		if got != want {
+			t.Errorf("ingress.Hostname() = %q, want %q", got, want)
+		}
+	})
+
+	t.Run("similar long names produce different hosts", func(t *testing.T) {
+		first := &ingress{
+			namespacedName: types.NamespacedName{
+				Name:      "data-pvc",
+				Namespace: "this-is-a-namespace-name-that-is-exactly-sixty-three-chars-long",
+			},
+			subdomain: "test.net",
+		}
+		second := &ingress{
+			namespacedName: types.NamespacedName{
+				Name:      "data-pvc",
+				Namespace: "this-is-a-namespace-name-that-is-exactly-sixty-three-chars-looo",
+			},
+			subdomain: "test.net",
+		}
+
+		firstHost := first.Hostname()
+		secondHost := second.Hostname()
+		if firstHost == secondHost {
+			t.Errorf("ingress.Hostname() collision: both long names produced %q", firstHost)
+		}
+	})
+}
+
 func Test_ingress_reconcileIngress(t *testing.T) {
 	testSubdomain := "test.net"
 	type fields struct {
