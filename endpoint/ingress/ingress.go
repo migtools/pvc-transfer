@@ -2,6 +2,7 @@ package ingress
 
 import (
 	"context"
+	"crypto/md5"
 	"fmt"
 
 	"github.com/backube/pvc-transfer/endpoint"
@@ -43,12 +44,18 @@ func (i *ingress) NamespacedName() types.NamespacedName {
 	return i.namespacedName
 }
 
+// truncateWithHash truncates a string to 62 characters and adds a hash to the end
+func truncateWithHash(name string) string {
+	hash := fmt.Sprintf("%x", md5.Sum([]byte(name)))[:8]
+	return name[:62-9] + "-" + hash
+}
+
 func (i *ingress) Hostname() string {
 	prefix := fmt.Sprintf("%s-%s",
 		i.namespacedName.Name,
 		i.namespacedName.Namespace)
 	if len(prefix) > 62 {
-		prefix = prefix[0:62]
+		prefix = truncateWithHash(prefix)
 	}
 	return fmt.Sprintf(
 		"%s.%s", prefix, i.subdomain)
