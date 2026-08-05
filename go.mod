@@ -1,4 +1,4 @@
-module github.com/backube/pvc-transfer
+module github.com/migtools/pvc-transfer
 
 go 1.16
 

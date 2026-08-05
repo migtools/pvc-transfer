@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/backube/pvc-transfer/endpoint"
-	"github.com/backube/pvc-transfer/internal/utils"
 	"github.com/go-logr/logr"
+	"github.com/migtools/pvc-transfer/endpoint"
+	"github.com/migtools/pvc-transfer/internal/utils"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"

@@ -1,7 +1,7 @@
 package rsync
 
 import (
-	"github.com/backube/pvc-transfer/transfer"
+	"github.com/migtools/pvc-transfer/transfer"
 	corev1 "k8s.io/api/core/v1"
 )
 

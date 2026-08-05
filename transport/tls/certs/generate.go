@@ -18,19 +18,19 @@ var (
 		Country:            []string{"US"},
 		Province:           []string{"NC"},
 		Locality:           []string{"RDU"},
-		Organization:       []string{"Backube"},
+		Organization:       []string{"Migtools"},
 		OrganizationalUnit: []string{"Engineering"},
 		// This does not have to be a domain name, but certain implementations/configuration
 		// verify the requests from other side using this and SAN fields.
-		CommonName: "ca.backube.dev",
+		CommonName: "ca.migtools.dev",
 	}
 	defaultCrtSubject = &pkix.Name{
 		Country:            []string{"US"},
 		Province:           []string{"NC"},
 		Locality:           []string{"RDU"},
-		Organization:       []string{"Backube"},
+		Organization:       []string{"Migtools"},
 		OrganizationalUnit: []string{"Engineering"},
-		CommonName:         "cert.backube.dev",
+		CommonName:         "cert.migtools.dev",
 	}
 )
 

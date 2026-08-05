@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/backube/pvc-transfer/endpoint"
 	logrtesting "github.com/go-logr/logr/testing"
+	"github.com/migtools/pvc-transfer/endpoint"
 	routev1 "github.com/openshift/api/route/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
