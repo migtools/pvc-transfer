@@ -68,3 +68,8 @@ type Credentials struct {
 type CredentialsType string
 
 type Type string
+
+// DefaultRsyncTransferImage is used for rsync and stunnel containers when no image is specified.
+// Downstream builds can override it at compile time with:
+// -X github.com/migtools/pvc-transfer/transport.DefaultRsyncTransferImage=<image>
+var DefaultRsyncTransferImage = "quay.io/konveyor/rsync-transfer:latest"

@@ -22,9 +22,8 @@ import (
 )
 
 const (
-	defaultStunnelImage = "quay.io/konveyor/rsync-transfer:latest"
-	stunnelConfig       = "stunnel-config"
-	stunnelSecret       = "stunnel-creds"
+	stunnelConfig = "stunnel-config"
+	stunnelSecret = "stunnel-creds"
 )
 
 const (
@@ -39,7 +38,7 @@ const (
 
 func getImage(options *transport.Options) string {
 	if options.Image == "" {
-		return defaultStunnelImage
+		return transport.DefaultRsyncTransferImage
 	} else {
 		return options.Image
 	}
