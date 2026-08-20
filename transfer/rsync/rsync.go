@@ -2,6 +2,7 @@ package rsync
 
 import (
 	"github.com/migtools/pvc-transfer/transfer"
+	"github.com/migtools/pvc-transfer/transport"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -10,7 +11,6 @@ const (
 )
 
 const (
-	rsyncImage                  = "quay.io/konveyor/rsync-transfer:latest"
 	rsyncConfig                 = "rsync-config"
 	rsyncServiceAccount         = "rsync-sa"
 	rsyncRole                   = "rsync-role"
@@ -37,7 +37,7 @@ func applyPodOptions(podSpec *corev1.PodSpec, options transfer.PodOptions) {
 		if options.Image != "" {
 			c.Image = options.Image
 		} else {
-			c.Image = rsyncImage
+			c.Image = transport.DefaultRsyncTransferImage
 		}
 		c.SecurityContext = &options.ContainerSecurityContext
 		c.Resources = options.Resources
