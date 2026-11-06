@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"math/big"
+	"strings"
 
 	b64 "encoding/base64"
 
@@ -46,10 +49,20 @@ func getImage(options *transport.Options) string {
 
 func getResourceName(obj types.NamespacedName, component, prefix string) string {
 	resourceName := fmt.Sprintf("%s-%s-%s", prefix, component, obj.Name)
-	if len(resourceName) > 62 {
-		return resourceName[:62]
+	return TruncateWithHash(resourceName)
+}
+
+// TruncateWithHash shortens long generated names while keeping them valid and
+// deterministic. The hash is derived from the complete original name so names
+// that share a readable prefix still produce distinct results.
+func TruncateWithHash(name string) string {
+	if len(name) <= 62 {
+		return name
 	}
-	return resourceName
+	hash := sha256.Sum256([]byte(name))
+	suffix := hex.EncodeToString(hash[:])[:12]
+	prefix := strings.TrimRight(name[:62-len(suffix)-1], "-.")
+	return prefix + "-" + suffix
 }
 
 func isTLSSecretValid(ctx context.Context, c ctrlclient.Client, logger logr.Logger, secretRef types.NamespacedName) (bool, error) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 
 	logrtesting "github.com/go-logr/logr/testing"
@@ -12,6 +13,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/validation"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -252,4 +254,55 @@ func Test_mrkForCleanup(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_getResourceName(t *testing.T) {
+	t.Run("short name is unchanged", func(t *testing.T) {
+		obj := types.NamespacedName{Name: "data"}
+		got := getResourceName(obj, "server", stunnelConfig)
+		want := "stunnel-config-server-data"
+		if got != want {
+			t.Fatalf("getResourceName() = %q, want %q", got, want)
+		}
+	})
+
+	t.Run("exact 62-character name is unchanged", func(t *testing.T) {
+		name := strings.Repeat("a", 62)
+		got := TruncateWithHash(name)
+		if got != name {
+			t.Fatalf("TruncateWithHash() = %q, want unchanged %q", got, name)
+		}
+	})
+
+	t.Run("reported long name is valid and deterministic", func(t *testing.T) {
+		obj := types.NamespacedName{Name: "persistence-rotation-test-2-urdmjod-nyi-server-0"}
+		got := getResourceName(obj, "server", stunnelConfig)
+		if len(got) > 62 {
+			t.Fatalf("getResourceName() length = %d, want <= 62", len(got))
+		}
+		if errs := validation.IsDNS1123Subdomain(got); len(errs) != 0 {
+			t.Fatalf("getResourceName() = %q, invalid: %v", got, errs)
+		}
+		if again := getResourceName(obj, "server", stunnelConfig); got != again {
+			t.Fatalf("getResourceName() is not deterministic: got %q then %q", got, again)
+		}
+	})
+
+	t.Run("trailing separator is removed before the hash", func(t *testing.T) {
+		for _, separator := range []string{"-", "."} {
+			name := strings.Repeat("a", 48) + separator + strings.Repeat("b", 30)
+			got := TruncateWithHash(name)
+			if errs := validation.IsDNS1123Subdomain(got); len(errs) != 0 {
+				t.Fatalf("TruncateWithHash(%q) = %q, invalid: %v", name, got, errs)
+			}
+		}
+	})
+
+	t.Run("long names with the same prefix do not collide", func(t *testing.T) {
+		first := getResourceName(types.NamespacedName{Name: "same-long-prefix-that-is-long-enough-to-be-truncated-first"}, "server", stunnelConfig)
+		second := getResourceName(types.NamespacedName{Name: "same-long-prefix-that-is-long-enough-to-be-truncated-second"}, "server", stunnelConfig)
+		if first == second {
+			t.Fatalf("getResourceName() collision: both names produced %q", first)
+		}
+	})
 }
